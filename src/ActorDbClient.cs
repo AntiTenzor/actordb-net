@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+
 using Thrift.Protocols;
 using Thrift.Transports.Client;
 
@@ -66,11 +66,11 @@ namespace ActorDb
 
 		#endregion
 
-		private readonly ILogger<ActorDbClient> _logger;
+		private readonly IActorDbLogger _logger;
 		private readonly CancellationTokenSource _cancel;
 		private readonly Actordb.Client _thrift;
 
-		public ActorDbClient(string host = "localhost", int port = 33306, ILogger<ActorDbClient> logger = null)
+		public ActorDbClient(string host = "localhost", int port = 33306, IActorDbLogger logger = null)
 		{
 			_logger = logger;
 			var tcp = new TcpClient(host, port);
@@ -81,7 +81,7 @@ namespace ActorDb
 			_cancel = new CancellationTokenSource();
 		}
 
-		public static async Task<IActorDbClient> BeginSession(string username, string password, ILogger<ActorDbClient> logger = null, string host = "localhost", int port = 33306)
+		public static async Task<IActorDbClient> BeginSession(string username, string password, IActorDbLogger logger = null, string host = "localhost", int port = 33306)
 		{
 			var client = new ActorDbClient(host, port, logger);
 			await client.LoginSecureAsync(username, password);
