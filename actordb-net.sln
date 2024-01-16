@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "actordb-net", "src\actordb-net.csproj", "{7DD5D64C-54D7-45F4-8CC2-73914F48ADE8}"
 EndProject
@@ -15,6 +15,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "actordb-net.UnitTests", "test\actordb-net.UnitTests\actordb-net.UnitTests.csproj", "{6A30EAC6-31B9-43F6-A084-23B51F2ACB8D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "actordb-api", "actordb-api\actordb-api.csproj", "{A467C5CE-CE73-4077-ACCA-830C91001D46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleSample01", "ConsoleSample01\ConsoleSample01.csproj", "{6D33A2A8-6CD1-4F4D-96A2-F9F0D1999FDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,6 +36,10 @@ Global
 		{A467C5CE-CE73-4077-ACCA-830C91001D46}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A467C5CE-CE73-4077-ACCA-830C91001D46}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A467C5CE-CE73-4077-ACCA-830C91001D46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D33A2A8-6CD1-4F4D-96A2-F9F0D1999FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D33A2A8-6CD1-4F4D-96A2-F9F0D1999FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D33A2A8-6CD1-4F4D-96A2-F9F0D1999FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D33A2A8-6CD1-4F4D-96A2-F9F0D1999FDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
