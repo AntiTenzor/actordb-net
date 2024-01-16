@@ -263,14 +263,96 @@ namespace ActorDb
 
 		#region Queries
 
-		
+		/// <summary>
+		/// Execute SQL query against single actor of known type
+		/// </summary>
+		/// <param name="actorname">actor name</param>
+		/// <param name="actortype">actor type</param>
+		/// <param name="sql">SQL statement</param>
+		/// <param name="flags">flags (?)</param>
+		/// <returns>tuple with actual result (List of Dictionaries) OR exception</returns>
+		public async Task<Tuple<List<Dictionary<string, Val>>, Exception>> ExecSingleAsync(string actorname, string actortype, string sql, List<string> flags)
+		{
+			try
+			{
+				var result = await _thrift.exec_singleAsync(actorname, actortype, sql, flags, _cancel.Token);
+				if (result.__isset.rdRes)
+				{
+					// Just debug
+					foreach (Dictionary<string, Val> row in result.RdRes.Rows)
+					{
+						if ((row == null) || (row.Count <= 0))
+							continue;
 
+						var first = row.First();
+						string colName = first.Key;
+						Val val = first.Value;
+						string valStr = val.ToString();
+					}
 
-		#endregion
-				
-		#region Actors
+					return new Tuple<List<Dictionary<string, Val>>, Exception>(result.RdRes.Rows, null);
+				}
 
-		public async Task<IReadOnlyCollection<string>> GetActorTypesAsync()
+				string msg = $"Unexpected result executing SQL statement for single actor '{actortype}({actorname})'. SQL: {sql ?? "NULL"}";
+				Exception error = new InvalidOperationException(msg);
+				_logger?.LogError(error, msg);
+
+				return new Tuple<List<Dictionary<string, Val>>, Exception>(null, error);
+			}
+			catch (InvalidRequestException ire)
+			{
+				_logger?.LogError(ire, $"Error executing SQL statement for single actor '{actortype}({actorname})'. Message: '{ire.Info}'; SQL: {sql ?? "NULL"}");
+				return new Tuple<List<Dictionary<string, Val>>, Exception>(null, ire);
+			}
+		}
+
+        /// <summary>
+        /// Execute SQL query against ALL actors of known type
+        /// </summary>
+        /// <param name="actortype">actor type</param>
+        /// <param name="sql">SQL statement</param>
+        /// <param name="flags">flags (?)</param>
+        /// <returns>tuple with actual result (List of Dictionaries) OR exception</returns>
+        public async Task<Tuple<List<Dictionary<string, Val>>, Exception>> ExecAllAsync(string actortype, string sql, List<string> flags)
+        {
+            try
+            {
+                var result = await _thrift.exec_allAsync(actortype, sql, flags, _cancel.Token);
+                if (result.__isset.rdRes)
+                {
+                    // Just debug
+                    foreach (Dictionary<string, Val> row in result.RdRes.Rows)
+                    {
+                        if ((row == null) || (row.Count <= 0))
+                            continue;
+
+                        var first = row.First();
+                        string colName = first.Key;
+                        Val val = first.Value;
+                        string valStr = val.ToString();
+                    }
+
+                    return new Tuple<List<Dictionary<string, Val>>, Exception>(result.RdRes.Rows, null);
+                }
+
+                string msg = $"Unexpected result executing SQL statement for all actors '{actortype}(*)'. SQL: {sql ?? "NULL"}";
+                Exception error = new InvalidOperationException(msg);
+                _logger?.LogError(error, msg);
+
+                return new Tuple<List<Dictionary<string, Val>>, Exception>(null, error);
+            }
+            catch (InvalidRequestException ire)
+            {
+                _logger?.LogError(ire, $"Error executing SQL statement for all actors '{actortype}(*)'. Message: '{ire.Info}'; SQL: {sql ?? "NULL"}");
+                return new Tuple<List<Dictionary<string, Val>>, Exception>(null, ire);
+            }
+        }
+
+        #endregion
+
+        #region Actors
+
+        public async Task<IReadOnlyCollection<string>> GetActorTypesAsync()
 		{
 			var result = await _thrift.actor_typesAsync(_cancel.Token);
 			return result?.AsReadOnly();
