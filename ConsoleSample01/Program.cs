@@ -136,6 +136,78 @@ namespace ConsoleSample01
                     }
                     Console.WriteLine();
                 }
+
+                {
+                    var t = client.ExecSqlAsync("   SELECT 1 AS i, 'Just a test' AS txt   ");
+                    t.Wait();
+                    var tuple = t.Result;
+                    // If everything is OK, then there is no exception in Item2
+                    if ((tuple.Item1 != null) && (tuple.Item2 == null))
+                    {
+                        Console.WriteLine("    i   |   txt");
+                        var listOfRows = tuple.Item1;
+                        for (int j = 0; j < listOfRows.Count; j++)
+                        {
+                            Dictionary<string, Val> row = listOfRows[j];
+
+                            string stop = "";
+
+                            if (row.TryGetValue("i", out Val ival) &&
+                                row.TryGetValue("txt", out Val tval))
+                            {
+                                Console.WriteLine($"  {ival} | {tval}");
+                            }
+                        }
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("   SOME ERROR!");
+                        if (tuple.Item2 != null)
+                            Console.WriteLine(tuple.Item2);
+                    }
+                    Console.WriteLine();
+                }
+
+                {
+                    // Flag 'CREATE' makes server to create new actor automatically
+                    string actorName = Guid.NewGuid().ToString("N");
+                    actorName = "rnd" + actorName.ToUpperInvariant().Substring(0, 1);
+
+                    // INSERT statement modifies wrRes and reports number of modified rows
+                    var t = client.ExecSingleAsync(
+                        actorName, "type1",
+                        "   INSERT INTO tab (i,txt) VALUES (17,\"Test INSERT with random actor\")   ",
+                        new List<string>() { "CREATE" });
+                    t.Wait();
+                    var tuple = t.Result;
+                    // If everything is OK, then there is no exception in Item2
+                    if ((tuple.Item1 != null) && (tuple.Item2 == null))
+                    {
+                        Console.WriteLine("    i   |   txt");
+                        var listOfRows = tuple.Item1;
+                        for (int j = 0; j < listOfRows.Count; j++)
+                        {
+                            Dictionary<string, Val> row = listOfRows[j];
+
+                            string stop = "";
+
+                            if (row.TryGetValue("i", out Val ival) &&
+                                row.TryGetValue("txt", out Val tval))
+                            {
+                                Console.WriteLine($"  {ival} | {tval}");
+                            }
+                        }
+                        Console.WriteLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine("   SOME ERROR!");
+                        if (tuple.Item2 != null)
+                            Console.WriteLine(tuple.Item2);
+                    }
+                    Console.WriteLine();
+                }
             }
         }
     }
