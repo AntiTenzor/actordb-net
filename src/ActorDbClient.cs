@@ -307,6 +307,47 @@ namespace ActorDb
 		}
 
         /// <summary>
+        /// Execute SQL statement that do not require actor or type
+		/// (create user, configuration, etc)
+        /// </summary>
+        /// <param name="sql">SQL statement</param>
+        /// <returns>tuple with actual result (List of Dictionaries) OR exception</returns>
+        public async Task<Tuple<List<Dictionary<string, Val>>, Exception>> ExecSqlAsync(string sql)
+        {
+            try
+            {
+                var result = await _thrift.exec_sqlAsync(sql, _cancel.Token);
+                if (result.__isset.rdRes)
+                {
+                    // Just debug
+                    foreach (Dictionary<string, Val> row in result.RdRes.Rows)
+                    {
+                        if ((row == null) || (row.Count <= 0))
+                            continue;
+
+                        var first = row.First();
+                        string colName = first.Key;
+                        Val val = first.Value;
+                        string valStr = val.ToString();
+                    }
+
+                    return new Tuple<List<Dictionary<string, Val>>, Exception>(result.RdRes.Rows, null);
+                }
+
+                string msg = $"Unexpected result executing simple SQL statement. SQL: {sql ?? "NULL"}";
+                Exception error = new InvalidOperationException(msg);
+                _logger?.LogError(error, msg);
+
+                return new Tuple<List<Dictionary<string, Val>>, Exception>(null, error);
+            }
+            catch (InvalidRequestException ire)
+            {
+                _logger?.LogError(ire, $"Error executing simple SQL statement. Message: '{ire.Info}'; SQL: {sql ?? "NULL"}");
+                return new Tuple<List<Dictionary<string, Val>>, Exception>(null, ire);
+            }
+        }
+
+        /// <summary>
         /// Execute SQL query against ALL actors of known type
         /// </summary>
         /// <param name="actortype">actor type</param>
